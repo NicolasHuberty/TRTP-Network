@@ -2,9 +2,11 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdint.h>
-
 #include "log.h"
-
+#include "real_adress.c"
+#include "create_socket.c"
+#include "wait_for_client.c"
+#include "read_write_loop.c"
 int print_usage(char *prog_name) {
     ERROR("Usage:\n\t%s [-s stats_filename] listen_ip listen_port", prog_name);
     return EXIT_FAILURE;
@@ -54,5 +56,22 @@ int main(int argc, char **argv) {
     ERROR("This is not an error, %s", "now let's code!");
 
     // Now let's code!
+    struct sockaddr_in6 addr;
+	const char *err = real_address(listen_ip, &addr);
+	if (err) {
+		perror("Real address failed");
+		return EXIT_FAILURE;
+	}
+    int sfd = create_socket(&addr,listen_port,NULL,-1);
+	if(sfd > 0 && wait_for_client(sfd) < 0){
+		fprintf(stderr, "Could not connect to client after the fist message\n");
+		close(sfd);
+		return EXIT_FAILURE;
+	}
+    if(sfd == -1){
+        perror("Socket failure");
+        return EXIT_FAILURE;
+    }
+    read_write_loop(sfd);
     return EXIT_SUCCESS;
 }
