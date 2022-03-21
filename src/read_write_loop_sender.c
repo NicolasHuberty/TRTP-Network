@@ -63,10 +63,16 @@ int read_write_loop_sender(int sfd,FILE *fd){
                         char *content = malloc(sizeof(MAX_BUFFER_SIZE -sizeof(pkt_t)));
                         //Start read file
                         fread(content,sizeof(char),sizeof(content),fd);
-                        if(feof(fd)){wait_an_ack = 1;}
                         put_on_pkt(buffer,content,seqnum_send++);
                         free(content);
                         write(sfd,buffer,sizeof(buffer));
+                        if(feof(fd)){
+                            fclose(fd);
+                            close(pfds[0].fd);
+                            close(pfds[1].fd);
+                            num_open_fds = 0;
+
+                        }
                         printf("Packet number %d send\n",seqnum_send -1);
 
                     }
@@ -80,5 +86,6 @@ int read_write_loop_sender(int sfd,FILE *fd){
 
         }
     }
+    free(pfds);
     return 0;
 }

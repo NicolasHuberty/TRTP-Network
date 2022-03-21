@@ -5,7 +5,10 @@
 #include <unistd.h>
 #include "packet_implem.c"
 #include "put_on_pkt.c"
-#define MAX_BUFFER_SIZE 1024
+#include "fifo.c"
+#define MAX_BUFFER_SIZE 1048
+int stop = 0;
+
 void read_write_loop(int sfd){
     fprintf(stdout,"Start\n");
     int nfds = 2;
@@ -19,6 +22,7 @@ void read_write_loop(int sfd){
         return;
     }
     pkt_t listpkt[5];
+    fifo_t *myFifo = malloc(sizeof(fifo_t));
     printf("size: %ld\n",sizeof(listpkt));
     fds[0].fd = sfd;
     fds[0].events = POLLIN;
@@ -31,34 +35,47 @@ void read_write_loop(int sfd){
             perror("Poll failure");
             return;
         }
-        if(fds[1].revents & POLLOUT){
-            //printf("pkt window: %d\n",pkt_get_window(&listpkt[i-1]));
-            if(pkt_get_window(&listpkt[i-1])==0){
-                printf("Inside\n");
-                char buffer[1024];
-                size_t size = 1024;
-                pkt_set_window(&listpkt[i-1],3);
-                pkt_encode(&listpkt[i-1],buffer,&size);
-                write(sfd,buffer,sizeof(buffer));
-                i--;
+        if(fds[1].revents != 0){
+            if(fds[1].revents & POLLOUT){
+                //printf("pkt window: %d\n",pkt_get_window(&listpkt[i-1]));
+                if(pkt_get_window(&listpkt[i-1])==0){
+                    char buffer[1024];
+                    size_t size = 1024;
+                    pkt_set_window(&listpkt[i-1],3);
+                    pkt_encode(&listpkt[i-1],buffer,&size);
+                    write(sfd,buffer,sizeof(buffer));
+                    i--;
+                }
+                
+            }else{
+                printf("Signal receive;");
+                open = 0;
             }
-            
         }
-        if(fds[0].revents & POLLIN){
-            char buf[MAX_BUFFER_SIZE];
-            pkt_t *pkt = pkt_new();
-            read(sfd,buf,sizeof(buf));
-            int dec = pkt_decode(buf,sizeof(buf),pkt);
-            printf("Payload val: %s\n",pkt_get_payload(pkt));
-            pkt_t *resp = pkt_new();
-            pkt_set_seqnum(resp,pkt_get_seqnum(pkt)+1);
-            pkt_set_window(resp,0);
-            if(dec==PKT_OK){
-                pkt_set_type(resp,PTYPE_ACK);
+        if(fds[0].revents != 0){
+            if(fds[0].revents & POLLIN){
+                char buf[MAX_BUFFER_SIZE];
+                pkt_t *pkt = pkt_new();
+                read(sfd,buf,sizeof(buf));
+                int dec = pkt_decode(buf,sizeof(buf),pkt);
+                printf("Payload nb:%d with val: %s\n",pkt_get_seqnum(pkt),pkt_get_payload(pkt));
+                //&buffer[stop] = pkt_get_payload(pkt);
+                stop += pkt_get_length(pkt);
+                pkt_t *resp = pkt_new();
+                pkt_set_seqnum(resp,pkt_get_seqnum(pkt)+1);
+                pkt_set_window(resp,0);
+                if(dec==PKT_OK){
+                    pkt_set_type(resp,PTYPE_ACK);
+                }
+                //enqueue(myFifo,resp);
+                listpkt[i++] = *resp;
+                free(pkt);
             }
-            listpkt[i++] = *resp;
-        }
-
+            else{
+                printf("Signal receive");
+                open = 0;
+            }
+        } 
         
     }
     printf("End !");
