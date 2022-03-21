@@ -3,6 +3,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <arpa/inet.h>
 int create_socket(struct sockaddr_in6 *source_addr,int src_port,struct sockaddr_in6 *dest_addr,int dst_port){
     int sockfd = socket(AF_INET6,SOCK_DGRAM,0);
     //int opt = 1; //To remove

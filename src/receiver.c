@@ -63,6 +63,11 @@ int main(int argc, char **argv) {
 		return EXIT_FAILURE;
 	}
     int sfd = create_socket(&addr,listen_port,NULL,-1);
+	if(sfd > 0 && wait_for_client(sfd) < 0){
+		fprintf(stderr, "Could not connect to client after the fist message\n");
+		close(sfd);
+		return EXIT_FAILURE;
+	}
     if(sfd == -1){
         perror("Socket failure");
         return EXIT_FAILURE;

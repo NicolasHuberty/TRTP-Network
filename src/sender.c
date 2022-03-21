@@ -18,6 +18,7 @@
 #include "read_write_loop.c"
 #include <sys/stat.h>
 #include <fcntl.h>
+#include "read_write_loop_sender.c"
 //#include "packet_implem.c"
 int print_usage(char *prog_name) {
     ERROR("Usage:\n\t%s [-f filename] [-s stats_filename] [-c] receiver_ip receiver_port", prog_name);
@@ -25,19 +26,6 @@ int print_usage(char *prog_name) {
 }
 
 char buf[1024];
-
-void put_on_pkt(int fd){
-    pkt_t *newPkt = pkt_new();
-    pkt_set_tr(newPkt,0);
-    pkt_set_type(newPkt,PTYPE_DATA);
-    pkt_set_window(newPkt,1);
-    pkt_set_timestamp(newPkt,385875968);
-    pkt_set_seqnum(newPkt,123);
-    pkt_set_payload(newPkt,"Hello World!",12);
-    pkt_set_length(newPkt,12);
-    size_t len = 12;
-    pkt_encode(newPkt,buf,&len);
-}
 int main(int argc, char **argv) {
     int opt;
 
@@ -70,11 +58,9 @@ int main(int argc, char **argv) {
         ERROR("Unexpected number of positional arguments");
         return print_usage(argv[0]);
     }
-    int fd;
-    if(!filename){
-        fd = STDIN_FILENO;
-    }else{
-        fd = open(filename,O_RDONLY);
+    FILE *fd;
+    if(filename){
+        fd = fopen(filename,"r");
     }
     receiver_ip = argv[optind];
     receiver_port = (uint16_t) strtol(argv[optind + 1], &receiver_port_err, 10);
@@ -105,8 +91,9 @@ int main(int argc, char **argv) {
         perror("Socket failure");
         return EXIT_FAILURE;
     }
-    put_on_pkt(fd);
-    send(sfd,buf,sizeof(buf),0);
-    read_write_loop(sfd);
+    //put_on_pkt(fd);
+    //send(sfd,buf,sizeof(buf),0);
+    read_write_loop_sender(sfd,fd);
     return EXIT_SUCCESS;
 }
+

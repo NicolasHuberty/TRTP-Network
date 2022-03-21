@@ -4,62 +4,61 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "packet_implem.c"
-
+#include "put_on_pkt.c"
+#define MAX_BUFFER_SIZE 1024
 void read_write_loop(int sfd){
     fprintf(stdout,"Start\n");
     int nfds = 2;
     int open = 2;
+    int i = 0;
+    int seqnum_receive = 0;
     struct pollfd *fds;
     fds = calloc(nfds,sizeof(struct pollfd));
     if(!fds){
         perror("Calloc failure");
         return;
     }
-    fds[0].fd = STDIN_FILENO;
+    pkt_t listpkt[5];
+    printf("size: %ld\n",sizeof(listpkt));
+    fds[0].fd = sfd;
     fds[0].events = POLLIN;
     fds[1].fd = sfd;
-    fds[1].events = POLLIN;
+    fds[1].events = POLLOUT;
     while(open > 1){
-        printf("Before poll\n");
         int ready;
         ready = poll(fds,nfds,-1);
-        printf("After poll\n");
         if(ready==-1){
             perror("Poll failure");
             return;
         }
-        for (int j = 0; j < nfds; j++)
-        {
-            
-            char buf[1000];
-            if(fds[j].revents != 0){
-                printf("New event !!");
-                if(fds[j].revents & POLLIN){
-                    printf("You are here %x\n",fds[j].revents);
-                    ssize_t s = read(fds[j].fd,buf,sizeof(buf));
-                    if(s==-1){
-                        perror("Read failure");
-                        return;
-                    }
-                    int e = write(sfd,buf,s);
-                    pkt_t *new_pkt = pkt_new();
-                    pkt_decode(buf,1000,new_pkt);
-                    printf("TR Val: %d\n",pkt_get_tr(new_pkt));
-                    printf("Pkt size: %d\n",pkt_get_length(new_pkt));
-                    printf("Pkt payload:%s\n",pkt_get_payload(new_pkt));
-                    //e = write(0,buf,s);
-                }else{
-                    if(fds[j].revents & POLLOUT){
-                        printf("Tiens tiens tiens\n");
-                    }
-                    if(close(fds[j].fd)==-1){
-                        perror("Close failure");
-                        return;
-                    }
-                    open--;
-                }
+        if(fds[1].revents & POLLOUT){
+            //printf("pkt window: %d\n",pkt_get_window(&listpkt[i-1]));
+            if(pkt_get_window(&listpkt[i-1])==0){
+                printf("Inside\n");
+                char buffer[1024];
+                size_t size = 1024;
+                pkt_set_window(&listpkt[i-1],3);
+                pkt_encode(&listpkt[i-1],buffer,&size);
+                write(sfd,buffer,sizeof(buffer));
+                i--;
             }
+            
         }
+        if(fds[0].revents & POLLIN){
+            char buf[MAX_BUFFER_SIZE];
+            pkt_t *pkt = pkt_new();
+            read(sfd,buf,sizeof(buf));
+            int dec = pkt_decode(buf,sizeof(buf),pkt);
+            printf("Payload val: %s\n",pkt_get_payload(pkt));
+            pkt_t *resp = pkt_new();
+            pkt_set_seqnum(resp,pkt_get_seqnum(pkt)+1);
+            pkt_set_window(resp,0);
+            if(dec==PKT_OK){
+                pkt_set_type(resp,PTYPE_ACK);
+            }
+            listpkt[i++] = *resp;
+        }
+
         
     }
     printf("End !");
