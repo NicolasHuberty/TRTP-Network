@@ -14,7 +14,6 @@ void read_write_loop(int sfd){
     int nfds = 2;
     int open = 2;
     int i = 0;
-    int seqnum_receive = 0;
     struct pollfd *fds;
     fds = calloc(nfds,sizeof(struct pollfd));
     if(!fds){
@@ -42,7 +41,11 @@ void read_write_loop(int sfd){
                     size_t size = 1024;
                     pkt_set_window(&listpkt[i-1],3);
                     pkt_encode(&listpkt[i-1],buffer,&size);
-                    write(sfd,buffer,sizeof(buffer));
+                    int w = write(sfd,buffer,sizeof(buffer));
+                    if(w==-1){
+                        perror("Write failure");
+                        exit(EXIT_FAILURE);
+                    }
                     i--;
                 }
                 
@@ -55,7 +58,11 @@ void read_write_loop(int sfd){
             if(fds[0].revents & POLLIN){
                 char buf[MAX_BUFFER_SIZE];
                 pkt_t *pkt = pkt_new();
-                read(sfd,buf,sizeof(buf));
+                int r = read(sfd,buf,sizeof(buf));
+                if(r==-1){
+                    perror("Read failure");
+                    exit(EXIT_FAILURE);
+                }
                 int dec = pkt_decode(buf,sizeof(buf),pkt);
                 printf("Payload nb:%d with val: %s\n",pkt_get_seqnum(pkt),pkt_get_payload(pkt));
                 //&buffer[stop] = pkt_get_payload(pkt);

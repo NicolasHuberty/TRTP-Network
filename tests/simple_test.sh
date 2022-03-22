@@ -26,7 +26,7 @@ cleanup()
 trap cleanup SIGINT  # Kill les process en arrière plan en cas de ^-C
 
 # On démarre le transfert
-if ! $valgrind ./sender ::1 1341 < input_file 2> sender.log ; then
+if ! $valgrind ./sender ::1 1341 -f test.txt ; then
   echo "Crash du sender!"
   cat sender.log
   err=1  # On enregistre l'erreur

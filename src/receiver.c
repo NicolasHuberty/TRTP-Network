@@ -16,7 +16,7 @@ int print_usage(char *prog_name) {
 int main(int argc, char **argv) {
     int opt;
 
-    char *stats_filename = NULL;
+    //char *stats_filename = NULL;
     char *listen_ip = NULL;
     char *listen_port_err;
     uint16_t listen_port;
@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
         case 'h':
             return print_usage(argv[0]);
         case 's':
-            stats_filename = optarg;
+            //stats_filename = optarg;
             break;
         default:
             return print_usage(argv[0]);

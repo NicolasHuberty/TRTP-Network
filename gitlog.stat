@@ -1,0 +1,164 @@
+commit 08325f0285c99c9112ea86eefd337e94b86f04d1
+Author: Nicolas <huberty.nicolas@hotmail.com>
+Date:   Tue Mar 22 10:51:37 2022 +0100
+
+    Seqnum not good possibilites to max 255 payload send
+
+ src/create_socket.c          |   1 -
+ src/fifo.c                   |  15 +++++----------
+ src/read_write_loop.c        |   8 ++++----
+ src/read_write_loop_sender.c |   6 +-----
+ src/receiver                 | Bin 23328 -> 23328 bytes
+ src/receiver.c               |   7 ++-----
+ src/sender                   | Bin 23584 -> 23584 bytes
+ src/test.txt                 |   3 ++-
+ 8 files changed, 14 insertions(+), 26 deletions(-)
+
+commit d63158bf5b7d9e2c53b4559c9ab2b28b3461c8b3
+Author: Nicolas <huberty.nicolas@hotmail.com>
+Date:   Mon Mar 21 14:14:28 2022 +0100
+
+    EOF signal close receiver and sender at end (FUNCTIONAL)
+
+ src/fifo.c                   |  60 +++++++++++++++++++++++++++++++++++++
+ src/read_write_loop.c        |  69 +++++++++++++++++++++++++++----------------
+ src/read_write_loop_sender.c |   9 +++++-
+ src/receiver                 | Bin 23248 -> 23328 bytes
+ src/sender                   | Bin 23432 -> 23584 bytes
+ src/test.txt                 |   5 +++-
+ 6 files changed, 115 insertions(+), 28 deletions(-)
+
+commit 3b9160c0254cdb8b1c67933c054802ee2ee2cd11
+Author: Nicolas <huberty.nicolas@hotmail.com>
+Date:   Mon Mar 21 11:43:34 2022 +0100
+
+    Acquittement functional all packets send without nack and without buffer receiver
+
+ src/.vscode/c_cpp_properties.json |  16 ++++++++
+ src/.vscode/launch.json           |  28 +++++++++++++
+ src/.vscode/settings.json         |  33 +++++++++++++++
+ src/create_socket.c               |   1 +
+ src/put_on_pkt.c                  |  28 +++++++++++++
+ src/read_write_loop.c             |  67 +++++++++++++++---------------
+ src/read_write_loop_sender.c      |  84 ++++++++++++++++++++++++++++++++++++++
+ src/receiver                      | Bin 23216 -> 23248 bytes
+ src/receiver.c                    |   5 +++
+ src/sender                        | Bin 23360 -> 23432 bytes
+ src/sender.c                      |  29 ++++---------
+ src/test.txt                      |   2 +-
+ src/wait_for_client.c             |  10 +++--
+ 13 files changed, 243 insertions(+), 60 deletions(-)
+
+commit 44769a137a61784c2aa13704a8bb61e324bbb55b
+Author: Nicolas <huberty.nicolas@hotmail.com>
+Date:   Sat Mar 19 21:32:50 2022 +0100
+
+    Just possible to send 1 pkt_t from sender to receiver
+
+ src/create_socket.c   |  36 +++++++++++++++++++++++++++
+ src/log.o             | Bin 2168 -> 0 bytes
+ src/packet_header     | Bin 2041104 -> 0 bytes
+ src/read_write_loop.c |  66 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ src/real_adress.c     |  24 ++++++++++++++++++
+ src/receiver          | Bin 0 -> 23216 bytes
+ src/receiver.c        |  18 ++++++++++++--
+ src/sender            | Bin 0 -> 23360 bytes
+ src/sender.c          |  59 ++++++++++++++++++++++++++++++++++++++------
+ src/test.txt          |   1 +
+ src/wait_for_client.c |  18 ++++++++++++++
+ 11 files changed, 213 insertions(+), 9 deletions(-)
+
+commit f249e80143844f65a98a9a12c0602dbe5e369658
+Author: Nicolas <huberty.nicolas@hotmail.com>
+Date:   Fri Mar 18 18:21:08 2022 +0100
+
+    V1 NOT WORKING
+
+ SendAndReceiveData/read_write_loop.c | 50 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 50 insertions(+)
+
+commit b57e94c51b539c85c34fc010d0686906a1c5a430
+Author: Nicolas <huberty.nicolas@hotmail.com>
+Date:   Fri Mar 18 18:20:44 2022 +0100
+
+    bind not working
+
+ SendAndReceiveData/create_socket.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+commit dbffd4abb9894eb313b77c30c68bdb7cdc86f18b
+Author: Nicolas <huberty.nicolas@hotmail.com>
+Date:   Fri Mar 18 17:25:46 2022 +0100
+
+    Not perfect but normally working
+
+ SendAndReceiveData/create_socket.c | 52 +++++++++++++-------------------------
+ SendAndReceiveData/real_address.c  | 23 +++++++++++++++++
+ 2 files changed, 40 insertions(+), 35 deletions(-)
+
+commit fb4e496d57e12f596930d3dce2e0fb79aa6f7a8f
+Author: Nicolas <huberty.nicolas@hotmail.com>
+Date:   Thu Mar 17 14:25:10 2022 +0100
+
+    100%
+
+ src/packet_implem.c | 200 +++++++++++++++++++++++++++++++++++++---------------
+ 1 file changed, 143 insertions(+), 57 deletions(-)
+
+commit 95101f5f9c9b931d3fc26c7b92d0e97e71e03dc9
+Author: Nicolas <huberty.nicolas@hotmail.com>
+Date:   Thu Mar 17 11:42:22 2022 +0100
+
+    First version not tested
+
+ SendAndReceiveData/create_socket.c | 46 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 46 insertions(+)
+
+commit 9aa7fd7a3e4d67aae79b0002b07e47b972cab934
+Author: Nicolas <huberty.nicolas@hotmail.com>
+Date:   Thu Mar 17 10:44:57 2022 +0100
+
+    100%
+
+ payloadFormat.c | 239 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 239 insertions(+)
+
+commit f1ded0607214852e3b7abaf2978f61f9d5c8378e
+Author: Nicolas Huberty <huberty.nicolas@hotmail.com>
+Date:   Sun Feb 27 14:53:15 2022 +0100
+
+    Skeleton Segment Format
+
+ src/packet_header      | Bin 0 -> 2041104 bytes
+ src/packet_implem.c    | 153 ++++++++++++++++++++++++++++++++++++++++++
+ src/packet_interface.h | 177 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 330 insertions(+)
+
+commit c443f9af88e7070afb8f690215d3781a3ad0e15e
+Author: Nicolas Huberty <huberty.nicolas@hotmail.com>
+Date:   Sat Feb 26 22:58:11 2022 +0100
+
+    Project skeletton
+
+ Makefile             |  58 ++++++++++++++++++++++++++++++++++++++++++++
+ README.md            |  21 ++++++++++++++--
+ src/log.c            |  21 ++++++++++++++++
+ src/log.h            |  57 +++++++++++++++++++++++++++++++++++++++++++
+ src/log.o            | Bin 0 -> 2168 bytes
+ src/receiver.c       |  58 ++++++++++++++++++++++++++++++++++++++++++++
+ src/receiver.o       | Bin 0 -> 3216 bytes
+ src/sender.c         |  67 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ src/sender.o         | Bin 0 -> 3312 bytes
+ tests/run_tests.sh   |   6 +++++
+ tests/simple_test.sh |  58 ++++++++++++++++++++++++++++++++++++++++++++
+ trtp_statement.pdf   | Bin 0 -> 10771114 bytes
+ 12 files changed, 344 insertions(+), 2 deletions(-)
+
+commit 4217c49b262314928a76528089a9c4da72f6b142
+Author: NicolasHuberty <46087013+NicolasHuberty@users.noreply.github.com>
+Date:   Sat Feb 26 22:51:52 2022 +0100
+
+    Initial commit
+
+ README.md | 2 ++
+ 1 file changed, 2 insertions(+)
