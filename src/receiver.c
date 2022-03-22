@@ -49,12 +49,9 @@ int main(int argc, char **argv) {
     DEBUG_DUMP("Some bytes", 11); // You can use it with any pointer type
 
     // This is not an error per-se.
-    ERROR("Receiver has following arguments: stats_filename is %s, listen_ip is %s, listen_port is %u",
-        stats_filename, listen_ip, listen_port);
+
 
     DEBUG("You can only see me if %s", "you built me using `make debug`");
-    ERROR("This is not an error, %s", "now let's code!");
-
     // Now let's code!
     struct sockaddr_in6 addr;
 	const char *err = real_address(listen_ip, &addr);
@@ -64,7 +61,7 @@ int main(int argc, char **argv) {
 	}
     int sfd = create_socket(&addr,listen_port,NULL,-1);
 	if(sfd > 0 && wait_for_client(sfd) < 0){
-		fprintf(stderr, "Could not connect to client after the fist message\n");
+		fprintf(stderr, "Not connected\n");
 		close(sfd);
 		return EXIT_FAILURE;
 	}

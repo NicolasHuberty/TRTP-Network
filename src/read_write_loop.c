@@ -22,7 +22,6 @@ void read_write_loop(int sfd){
         return;
     }
     pkt_t listpkt[5];
-    fifo_t *myFifo = malloc(sizeof(fifo_t));
     printf("size: %ld\n",sizeof(listpkt));
     fds[0].fd = sfd;
     fds[0].events = POLLIN;
@@ -62,14 +61,14 @@ void read_write_loop(int sfd){
                 //&buffer[stop] = pkt_get_payload(pkt);
                 stop += pkt_get_length(pkt);
                 pkt_t *resp = pkt_new();
-                pkt_set_seqnum(resp,pkt_get_seqnum(pkt)+1);
+                pkt_set_seqnum(resp,(pkt_get_seqnum(pkt)+1));
                 pkt_set_window(resp,0);
                 if(dec==PKT_OK){
                     pkt_set_type(resp,PTYPE_ACK);
                 }
-                //enqueue(myFifo,resp);
+               
                 listpkt[i++] = *resp;
-                free(pkt);
+                pkt_del(pkt);
             }
             else{
                 printf("Signal receive");
@@ -79,4 +78,5 @@ void read_write_loop(int sfd){
         
     }
     printf("End !");
+    free(myFifo);
 }

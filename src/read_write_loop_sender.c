@@ -51,6 +51,7 @@ int read_write_loop_sender(int sfd,FILE *fd){
                         exit(EXIT_FAILURE);
                     }
                 }
+                pkt_del(pkt);
                 //Deal the entry pkt
             }
         }
@@ -79,11 +80,6 @@ int read_write_loop_sender(int sfd,FILE *fd){
                 }
                     
                 }
-
-                //Ready to write
-                //send(some data)
-        
-
         }
     }
     free(pfds);
