@@ -2,10 +2,10 @@
 # Comment tester le code: 
 make tests
 OU si il y a la moindre erreur
-dans le dossier src/ 
-gcc -o receiver receiver.c -lz
-gcc -o sender sender.c -lz
-./receiver ::1 12345 &
+dans le dossier src/ \n 
+gcc -o receiver receiver.c -lz \n
+gcc -o sender sender.c -lz \n
+./receiver ::1 12345 & \n
 ./sender ::1 12345 -f test.txt
  ___________________________________________
 
