@@ -8,11 +8,9 @@
 int read_write_loop_sender(int sfd,FILE *fd){
     int wait_an_ack = 0;
     int window = 1;
-    int seqnum = 0;
     int seqnum_valid = 0;
     int seqnum_send = 0;
     int nfds,num_open_fds;
-    int end = 0;
     struct pollfd *pfds;
     pfds = calloc(2,sizeof(struct pollfd));
     if(!pfds){
@@ -51,6 +49,7 @@ int read_write_loop_sender(int sfd,FILE *fd){
                         exit(EXIT_FAILURE);
                     }
                 }
+                pkt_del(pkt);
                 //Deal the entry pkt
             }
         }
@@ -62,23 +61,33 @@ int read_write_loop_sender(int sfd,FILE *fd){
                         char buffer[MAX_BUFFER_SIZE];
                         char *content = malloc(sizeof(MAX_BUFFER_SIZE -sizeof(pkt_t)));
                         //Start read file
-                        fread(content,sizeof(char),sizeof(content),fd);
-                        if(feof(fd)){wait_an_ack = 1;}
+                        int r = fread(content,sizeof(char),sizeof(content),fd);
+                        if(r==-1){
+                            perror("Read failure");
+                            exit(EXIT_FAILURE);
+                        }
                         put_on_pkt(buffer,content,seqnum_send++);
                         free(content);
-                        write(sfd,buffer,sizeof(buffer));
+                        int w = write(sfd,buffer,sizeof(buffer));
+                        if(w==-1){
+                            perror("Read failure");
+                            exit(EXIT_FAILURE);
+                        }
+                        if(feof(fd)){
+                            fclose(fd);
+                            close(pfds[0].fd);
+                            close(pfds[1].fd);
+                            num_open_fds = 0;
+
+                        }
                         printf("Packet number %d send\n",seqnum_send -1);
 
                     }
                 }
                     
                 }
-
-                //Ready to write
-                //send(some data)
-        
-
         }
     }
+    free(pfds);
     return 0;
 }

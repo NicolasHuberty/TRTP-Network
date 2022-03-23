@@ -32,6 +32,5 @@ int create_socket(struct sockaddr_in6 *source_addr,int src_port,struct sockaddr_
             return -1;
         }
     }
-    printf("Socket send: %d\n",sockfd);
     return sockfd;
 }

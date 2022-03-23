@@ -1,4 +1,4 @@
-# You can use clang if you prefer
+﻿# You can use clang if you prefer
 CC = gcc
 
 # Feel free to add other C flags
@@ -7,7 +7,7 @@ CFLAGS += -c -std=gnu99 -Wall -Werror -Wextra -O2
 CFLAGS += -D_COLOR
 
 # You may want to add something here
-LDFLAGS +=
+LDFLAGS += -lz
 
 # Adapt these as you want to fit with your project
 SENDER_SOURCES = $(wildcard src/sender.c src/log.c)
@@ -40,7 +40,7 @@ mrproper:
 
 # It is likely that you will need to update this
 tests: all
-	./tests/run_tests.sh
+	./tests/my_test.sh
 
 # By default, logs are disabled. But you can enable them with the debug target.
 debug: CFLAGS += -D_DEBUG
@@ -55,4 +55,4 @@ zip:
 	git log --stat > gitlog.stat
 	zip -r $(ZIP_NAME) Makefile README.md src tests rapport.pdf gitlog.stat
 	# We remove it now, but you can leave it if you want.
-	rm gitlog.stat
+	

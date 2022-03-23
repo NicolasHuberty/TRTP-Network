@@ -30,10 +30,10 @@ int main(int argc, char **argv) {
     int opt;
 
     char *filename = NULL;
-    char *stats_filename = NULL;
+    //char *stats_filename = NULL;
     char *receiver_ip = NULL;
     char *receiver_port_err;
-    bool fec_enabled = false;
+    //bool fec_enabled = false;
     uint16_t receiver_port;
 
     while ((opt = getopt(argc, argv, "f:s:hc")) != -1) {
@@ -44,10 +44,10 @@ int main(int argc, char **argv) {
         case 'h':
             return print_usage(argv[0]);
         case 's':
-            stats_filename = optarg;
+            //stats_filename = optarg;
             break;
 	case 'c':
-	    fec_enabled = true;
+	    //fec_enabled = true;
 	    break;
         default:
             return print_usage(argv[0]);
@@ -59,8 +59,11 @@ int main(int argc, char **argv) {
         return print_usage(argv[0]);
     }
     FILE *fd;
-    fd = fopen(filename,"r");
-
+    if(filename){
+        fd = fopen(filename,"r");
+    }else{
+        fd = STDIN_FILENO;
+    }
     receiver_ip = argv[optind];
     receiver_port = (uint16_t) strtol(argv[optind + 1], &receiver_port_err, 10);
     if (*receiver_port_err != '\0') { 
