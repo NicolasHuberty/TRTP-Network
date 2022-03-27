@@ -1,0 +1,11 @@
+@@ Using random seed: 1648374830
+@@ Using parameters:
+.. port: 2456
+.. forward_port: 2456
+.. delay: 50
+.. jitter: 0
+.. err_rate: 0
+.. cut_rate: 0
+.. loss_rate: 10
+.. seed: 1648374830
+.. link_direction: Both ways
