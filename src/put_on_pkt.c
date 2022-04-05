@@ -18,19 +18,22 @@ void put_on_pkt(void *buf,void *payload,int seqnum,int window,int end){
     pkt_t *newPkt = pkt_new();
     pkt_set_tr(newPkt,0);
     pkt_set_type(newPkt,PTYPE_DATA);
-    if(!end){
+    if(end == 0){
         pkt_set_length(newPkt,sizeof(payload));
-    }else{
+        pkt_set_payload(newPkt,payload,sizeof(payload));
+    }else if(end==1){
         pkt_set_length(newPkt,0);
+        pkt_set_payload(newPkt,NULL,0);
+    }else{
+        pkt_set_type(newPkt,PTYPE_NACK);
     }
-    time_t sent_moment = time(NULL);
+    time_t sent_moment = clock();
     pkt_set_timestamp(newPkt,(uint32_t)sent_moment);
     pkt_set_seqnum(newPkt,seqnum);
     pkt_set_window(newPkt,window);
-    pkt_set_seqnum(newPkt,seqnum);
-    pkt_set_payload(newPkt,payload,sizeof(payload));
     
-    size_t len = 12;
+    
+    size_t len = 512;
     pkt_encode(newPkt,buf,&len);
     pkt_del(newPkt);
 }

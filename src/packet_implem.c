@@ -37,7 +37,10 @@ pkt_t* pkt_new()
 
 void pkt_del(pkt_t *pkt)
 {
-    if(pkt->payload)free(pkt->payload);
+    if(pkt_get_length(pkt) != 0 && pkt_get_payload(pkt)){
+        free(pkt->payload);
+        pkt->payload = NULL;
+    }
     free(pkt);
 }
 
@@ -69,7 +72,10 @@ pkt_status_code pkt_decode(const char *data, const size_t len, pkt_t *pkt)
     uint32_t n_crc1;
     memcpy(&n_crc1,data+8,sizeof(uint32_t)); 
     pkt_set_crc1(pkt,ntohl(n_crc1));
-    if(my_crc1 != pkt_get_crc1(pkt))return E_CRC;
+    if(my_crc1 != pkt_get_crc1(pkt)){
+        //printf("Nack on the header!!!!!!!!!\n");
+        return E_CRC;
+    }
     if(pkt_get_length(pkt)>0){
         //PAYLOAD
         pkt_set_payload(pkt,&data[12],pkt_get_length(pkt));
@@ -78,7 +84,11 @@ pkt_status_code pkt_decode(const char *data, const size_t len, pkt_t *pkt)
         uint32_t n_crc2;
         memcpy(&n_crc2,data+12+pkt_get_length(pkt),sizeof(uint32_t));
         pkt_set_crc2(pkt,ntohl(n_crc2));
-        if(pkt_get_crc2(pkt) != my_crc2)return E_CRC;
+        //printf("Pkt %d crc21: %d and pkt crc22: %d\n",pkt_get_seqnum(pkt),pkt_get_crc2(pkt),my_crc2);
+        if(pkt_get_crc2(pkt) != my_crc2){
+            //printf("Nack on the payload!!!!!!\n");
+            return E_CRC;
+        }
 
     }
     return PKT_OK;
@@ -218,4 +228,22 @@ pkt_status_code pkt_set_payload(pkt_t *pkt,
     if(!pkt->payload)return E_NOMEM;
     memcpy(pkt->payload,data,length);
     return PKT_OK;
-}
+}/*
+int main(int argc,char ** argv){
+    pkt_t * packet = pkt_new();
+    pkt_set_tr(packet,0);
+    pkt_set_type(packet,1);
+    pkt_set_window(packet, 28);
+    pkt_set_seqnum(packet,123);
+    pkt_set_payload(packet,"HelloWorld",11);
+    pkt_set_length(packet,11);
+    pkt_set_timestamp(packet,385875968);
+    char* buffer = malloc(25*sizeof(char));
+    size_t len = 25;
+    pkt_encode(packet,buffer,&len);
+    pkt_t * packet2 = pkt_new();
+    pkt_decode(buffer,25,packet2);
+    pkt_del(packet);
+    pkt_del(packet2);
+    free(buffer);
+}*/
