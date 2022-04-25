@@ -1,0 +1,12 @@
+data_sent: 0
+data_received: 52
+data_truncated: 0
+fec_sent: 0
+fec_received: 0
+ack_sent: 51
+ack_received: 0
+nack_sent: 0
+nack_received: 0
+packet_ignored: 0
+packet_duplicated: 0
+packet_recovered: 0

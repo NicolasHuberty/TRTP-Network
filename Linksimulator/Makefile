@@ -22,6 +22,11 @@ debug: CFLAGS += -g -DDEBUG -Wno-unused-parameter -fno-omit-frame-pointer
 debug: LDFLAGS += -lSegFault
 debug: link_sim
 
+mytest:
+	make clean
+	make	
+	kill -9 `pgrep receiver` || true
+	./link_sim -e 10 -p 1234 -P 12345 &../receiver :: 12345
 link_sim: $(OBJECTS)
 
 .PHONY: clean mrproper rebuild

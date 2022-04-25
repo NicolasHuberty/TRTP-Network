@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
     if(stats_filename != NULL){
         sf = fopen(stats_filename,"w");
     }else{
-        sf = stdout;
+        sf = stderr;
     }
 
     listen_ip = argv[optind];

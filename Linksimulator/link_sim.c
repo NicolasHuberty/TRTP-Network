@@ -128,7 +128,7 @@ static void timeval_diff(const struct timeval *a,
 /* Log an action on a processed packet */
 #define LOG_PKT_FMT(buf, fmt, ...) \
 	fprintf(stderr,"[%s %3hhu] " fmt, ((uint8_t)buf[0] & 0xC0) == 0x00 ? "FEC" : "SEQ" , (((uint8_t)buf[0] & 0xC0) <= 0x40) ? buf[3] : buf[1], ##__VA_ARGS__)
-#define LOG_PKT(buf, msg) LOG_PKT_FMT(buf, msg "\n")
+#define LOG_PKT(buf, msg) //LOG_PKT_FMT(buf, msg "\n")
 
 /* Send a packet to the host we're proxying */
 static int write_out(const char *buf, int len, int direction)
@@ -142,7 +142,7 @@ static int write_out(const char *buf, int len, int direction)
 		default: addr = NULL;
 				 break;
 	};
-	LOG_PKT_FMT(buf, "Sent packet (%s).\n", get_link_direction(direction));
+	//LOG_PKT_FMT(buf, "Sent packet (%s).\n", get_link_direction(direction));
 	return sendto(sfd, buf, len, 0, (struct sockaddr*)addr,
 			sizeof(*addr)) == len ? EXIT_SUCCESS : EXIT_FAILURE;
 }
@@ -195,7 +195,7 @@ static inline int simulate_link(char *buf, int len, int direction)
 	/* or do we corrupt it? */
 	} else if (err_rate && RAND_PERCENT < err_rate) {
 		int idx = rand() % len;
-		LOG_PKT_FMT(buf, "Corrupting packet: inverted byte #%d\n", idx);
+		//LOG_PKT_FMT(buf, "Corrupting packet: inverted byte #%d\n", idx);
 		buf[idx] = ~buf[idx];
 	}
 	/* Do we want to simulate delay? */

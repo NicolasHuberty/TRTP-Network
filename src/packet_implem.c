@@ -37,7 +37,7 @@ pkt_t* pkt_new()
 
 void pkt_del(pkt_t *pkt)
 {
-    if(pkt_get_length(pkt) != 0 && pkt_get_payload(pkt)){
+    if(pkt_get_length(pkt) > 0 && pkt_get_payload(pkt)){
         free(pkt->payload);
         pkt->payload = NULL;
     }
@@ -60,6 +60,7 @@ pkt_status_code pkt_decode(const char *data, const size_t len, pkt_t *pkt)
     uint16_t n_length;
     memcpy(&n_length,data+1,sizeof(uint16_t));
     pkt_set_length(pkt,ntohs(n_length));
+    if(pkt_get_length(pkt) > 512 )return E_LENGTH;
     //SEQNUM
     pkt_set_seqnum(pkt,data[3]);
     //TIMESTAMP
@@ -78,9 +79,8 @@ pkt_status_code pkt_decode(const char *data, const size_t len, pkt_t *pkt)
     }
     if(pkt_get_length(pkt)>0){
         //PAYLOAD
-        pkt_set_payload(pkt,&data[12],pkt_get_length(pkt));
         //CRC2
-        uint32_t my_crc2 = crc32(crc32(0L, Z_NULL, 0), (const Bytef *) pkt_get_payload(pkt),pkt_get_length(pkt));
+        uint32_t my_crc2 = crc32(crc32(0L, Z_NULL, 0), (const Bytef *) &data[12],pkt_get_length(pkt));
         uint32_t n_crc2;
         memcpy(&n_crc2,data+12+pkt_get_length(pkt),sizeof(uint32_t));
         pkt_set_crc2(pkt,ntohl(n_crc2));
@@ -88,7 +88,10 @@ pkt_status_code pkt_decode(const char *data, const size_t len, pkt_t *pkt)
         if(pkt_get_crc2(pkt) != my_crc2){
             //printf("Nack on the payload!!!!!!\n");
             return E_CRC;
+        }else{
+            pkt_set_payload(pkt,&data[12],pkt_get_length(pkt));
         }
+
 
     }
     return PKT_OK;
