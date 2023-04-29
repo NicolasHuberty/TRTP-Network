@@ -1,19 +1,48 @@
-# My Wonderful LINFO1341 Project
+# TRTP Network Sender and Receiver
 
-The very first thing you might want to do in this folder is the following command:
-```bash
-git init
-```
+TRTP Network Sender and Receiver is a pair of programs designed to transmit data over a network using the UDP protocol. This repository provides an implementation of both the sender and the receiver, complete with error handling and logging capabilities.
 
-This will initialize your Git repository.
-You should also put it in a **private** repository (GitHub, GitLab, Bitbucket,... it is up to you but it **has to** stay private).
+## Table of Contents
 
-The Makefile contains all the required targets, but you might want to extend their behavior.
+- [Introduction](#introduction)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Sender](#sender)
+  - [Receiver](#receiver)
+- [Contributing](#contributing)
+- [License](#license)
 
-Very basic skelettons of receiver and sender source files are present, have a look to understand how you can enable logging or not.
+## Introduction
 
-A very simple test case is present, you probably want to update it.
+This project consists of two separate programs, `sender` and `receiver`, which are designed to transmit and receive data packets over a network. The sender reads data from a file or standard input and transmits it to the receiver using UDP. The receiver listens for incoming packets, processes them, and writes the received data to a file or standard output.
 
-You might be interested in the link simulator that can be found at https://github.com/cnp3/Linksimulator
+## Requirements
 
-And finally, if this message is still there at your final submission, it looks like you forgot to provide a proper README.
+- GCC compiler
+- GNU Make
+
+## Installation
+
+1. Clone the repository:
+
+git clone https://github.com/NicolasHuberty/TRTP-Network.git
+
+2. Enter the project directory:
+
+cd TRTP-Network
+
+3. Compile the sender and receiver programs:
+
+make all
+
+
+## Usage
+
+### Sender
+
+To run the sender program, use the following syntax:
+
+´´´
+./sender [-f filename] [-s stats_filename] [-c] receiver_ip receiver_port
+´´
