@@ -25,8 +25,10 @@ This project consists of two separate programs, `sender` and `receiver`, which a
 ## Installation
 
 1. Clone the repository:
+´´´bash
 
 git clone https://github.com/NicolasHuberty/TRTP-Network.git
+´´
 
 2. Enter the project directory:
 
